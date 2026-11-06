@@ -5,7 +5,7 @@
 
 class TicksEngine {
   constructor() {
-    this.currency = 'USD';
+    this.currency = 'EUR';
     this.mode = '5yr'; // '5yr' or 'ttm'
     this.multiplier = 1; // 1x, 10x, 60x, 3600x, 86400x
     this.isPaused = false;

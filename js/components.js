@@ -291,7 +291,7 @@ class UIComponents {
               <div class="flex items-center justify-between text-xs">
                 <span class="text-zinc-400 flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                  Lower Class ($30k):
+                  Lower Class (${window.engine.formatCompact(window.engine.convertAmount(30000))}):
                 </span>
                 <span class="font-mono font-semibold text-zinc-200" id="b-parity-lower-${b.id}">
                   ${window.engine.formatSecondsDuration(lowerSecs)}
@@ -302,7 +302,7 @@ class UIComponents {
               <div class="flex items-center justify-between text-xs">
                 <span class="text-zinc-400 flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-cyan-500"></span>
-                  Middle Class ($75k):
+                  Middle Class (${window.engine.formatCompact(window.engine.convertAmount(75000))}):
                 </span>
                 <span class="font-mono font-semibold text-cyan-400" id="b-parity-middle-${b.id}">
                   ${window.engine.formatSecondsDuration(middleSecs)}
@@ -313,7 +313,7 @@ class UIComponents {
               <div class="flex items-center justify-between text-xs">
                 <span class="text-zinc-400 flex items-center gap-1.5">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                  Upper-Middle ($160k):
+                  Upper-Middle (${window.engine.formatCompact(window.engine.convertAmount(160000))}):
                 </span>
                 <span class="font-mono font-semibold text-emerald-400" id="b-parity-upper-${b.id}">
                   ${window.engine.formatSecondsDuration(upperSecs)}
@@ -432,11 +432,8 @@ class UIComponents {
     this.renderSocioeconomicRails();
     this.renderBillionaireCards();
     this.cacheDomNodes();
-    if (window.scaleChart) window.scaleChart.render();
-    if (window.raceVisualizer) {
-      window.raceVisualizer.updateUserRateDisplay();
-      window.raceVisualizer.updateStaticComparisons();
-    }
+    if (window.tangibleWealth) window.tangibleWealth.refresh();
+    if (window.netWorthRank) window.netWorthRank.refresh();
   }
 }
 

@@ -12,21 +12,32 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://ticks.maksimluzik.com/" />
   <meta property="og:title" content="TICKS // Real-Time Wealth Velocity Engine" />
-  <meta property="og:description" content="How fast do billionaires get richer? Race your salary against them, second by second." />
+  <meta property="og:description" content="How fast do billionaires get richer? See what it buys, second by second." />
   <meta name="twitter:card" content="summary" />
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2309090b'/%3E%3Cpath d='M7 17l5 5 13-13' stroke='%2310b981' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-K5FRBM');</script>
+  <!-- End Google Tag Manager -->
 
   <!-- Third-party (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body class="bg-zinc-950 text-zinc-100 min-h-screen">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5FRBM"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
 
   <!-- ===== Header ===== -->
   <header class="sticky top-0 z-30 glass-panel border-b border-zinc-800/80">
@@ -51,12 +62,7 @@
 
         <button id="btn-toggle-currency" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Toggle currency (C)">
           <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
-          <span id="currency-btn-label">USD ($)</span>
-        </button>
-
-        <button id="btn-toggle-sound" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Toggle sound (S)">
-          <span id="sound-icon"><i data-lucide="volume-x" class="w-4 h-4 text-zinc-400"></i></span>
-          <span id="sound-label" class="text-zinc-400">Audio Off</span>
+          <span id="currency-btn-label">EUR (&euro;)</span>
         </button>
 
         <button id="btn-share-snapshot" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Share snapshot (P)">
@@ -154,113 +160,102 @@
       <div id="billionaire-cards-grid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
     </section>
 
-    <!-- ===== 4. Race Your Salary ===== -->
-    <section aria-labelledby="race-title" class="rounded-2xl glass-panel p-6 md:p-8">
-      <h2 id="race-title" class="text-2xl font-bold tracking-tight">Race Your Salary</h2>
-      <p class="text-sm text-zinc-400 mt-1 mb-6">Pick an income and a billionaire. Watch who gets there first.</p>
+    <!-- ===== Net Worth Rank ===== -->
+    <section aria-labelledby="rank-title" class="rounded-2xl glass-panel p-6 md:p-8">
+      <h2 id="rank-title" class="text-2xl font-bold tracking-tight">Where Do You Rank?</h2>
+      <p class="text-sm text-zinc-400 mt-1 mb-6">Enter your net worth (assets minus debts) to see where you stand among the world's adults.</p>
 
-      <div class="grid lg:grid-cols-3 gap-6">
-        <!-- Controls -->
+      <div class="grid lg:grid-cols-2 gap-8">
         <div class="space-y-4">
-          <div id="race-presets" class="flex flex-wrap gap-2 text-xs">
-            <button data-preset-id="min_wage" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Minimum Wage</button>
-            <button data-preset-id="lower_class" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Lower ($30k)</button>
-            <button data-preset-id="us_median" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">US Median ($59k)</button>
-            <button data-preset-id="middle_class" class="px-2.5 py-1.5 rounded-lg border bg-cyan-500/20 border-cyan-500 text-cyan-300">Middle ($75k)</button>
-            <button data-preset-id="engineer" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Software Eng ($140k)</button>
-            <button data-preset-id="upper_middle" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Upper-Middle ($160k)</button>
-          </div>
-
-          <div class="flex gap-2">
-            <input id="custom-salary-input" type="number" min="0" step="any" value="75000" aria-label="Your income"
-                   class="flex-1 min-w-0 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:border-cyan-500" />
-            <select id="custom-salary-period" aria-label="Income period" class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 text-sm">
-              <option value="annual">/ year</option>
-              <option value="monthly">/ month</option>
-              <option value="hourly">/ hour</option>
-            </select>
-          </div>
-
-          <label class="block text-xs text-zinc-400">
-            Race against
-            <select id="race-billionaire-select" class="mt-1 w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200"></select>
+          <label class="block text-xs text-zinc-400">Your net worth
+            <input id="networth-input" type="number" step="any" placeholder="e.g. 50000" inputmode="decimal"
+                   class="mt-1 w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-3 font-mono text-lg focus:outline-none focus:border-emerald-500" />
           </label>
-
-          <div class="text-xs text-zinc-500 font-mono space-y-0.5">
-            <div>You: <span id="user-rate-per-sec" class="text-cyan-400">--</span></div>
-            <div>You: <span id="user-rate-per-hr" class="text-cyan-400">--</span></div>
+          <div class="flex flex-wrap gap-2 text-xs">
+            <button data-networth-preset="0" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600">$0</button>
+            <button data-networth-preset="10000" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600">$10k</button>
+            <button data-networth-preset="100000" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600">$100k</button>
+            <button data-networth-preset="1000000" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600">$1M</button>
+            <button data-networth-preset="10000000" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400 hover:border-zinc-600">$10M</button>
           </div>
+          <p class="text-[11px] text-zinc-600">Uses your selected currency. Estimates are rounded from public data (UBS Global Wealth Report, US Federal Reserve SCF, Forbes) and are for scale only. Nothing you type leaves your browser.</p>
         </div>
 
-        <!-- Race track -->
-        <div class="lg:col-span-2 space-y-5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs text-zinc-500 uppercase tracking-wider">Progress toward your annual salary</span>
-            <span id="race-ratio-badge" class="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 text-xs font-mono font-bold">--</span>
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span class="text-cyan-400 font-medium">You</span>
-              <span id="race-user-accumulated" class="font-mono text-zinc-300 tabular-nums">$0.00000</span>
-            </div>
-            <div class="h-3 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
-              <div id="race-user-progress-bar" class="h-full bg-cyan-500 rounded-full" style="width:0%"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs mb-1">
-              <span class="text-emerald-400 font-medium">Billionaire</span>
-              <span id="race-billionaire-accumulated" class="font-mono text-zinc-300 tabular-nums">$0.00</span>
-            </div>
-            <div class="h-3 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
-              <div id="race-billionaire-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full" style="width:0%"></div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-3 text-center">
-            <div class="rounded-lg bg-zinc-950/60 border border-zinc-800 p-3">
-              <div class="text-[10px] uppercase text-zinc-500">Your month</div>
-              <div id="time-for-user-monthly" class="font-mono font-bold text-amber-400 text-sm mt-1">--</div>
-            </div>
-            <div class="rounded-lg bg-zinc-950/60 border border-zinc-800 p-3">
-              <div class="text-[10px] uppercase text-zinc-500">Your year</div>
-              <div id="time-for-user-annual" class="font-mono font-bold text-amber-400 text-sm mt-1">--</div>
-            </div>
-            <div class="rounded-lg bg-zinc-950/60 border border-zinc-800 p-3">
-              <div class="text-[10px] uppercase text-zinc-500">40-year career</div>
-              <div id="time-for-user-career" class="font-mono font-bold text-amber-400 text-sm mt-1">--</div>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="text-xs uppercase tracking-wider text-zinc-500 mb-2">Milestones unlocked</h3>
-            <div id="milestone-feed" class="space-y-2">
-              <div class="text-xs text-zinc-500 italic py-2 text-center" id="empty-milestone-msg">Live milestones unlock automatically as seconds tick...</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 5. Comparative Scale ===== -->
-    <section aria-labelledby="chart-title">
-      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
         <div>
-          <h2 id="chart-title" class="text-2xl font-bold tracking-tight">Comparative Scale</h2>
-          <p class="text-sm text-zinc-400 mt-1">Switch to linear to see working-class income vanish.</p>
+          <div id="networth-empty" class="h-full min-h-[8rem] flex items-center justify-center text-sm text-zinc-500 italic">Your result will appear here.</div>
+          <div id="networth-result" class="hidden space-y-4">
+            <div>
+              <div id="networth-headline" class="text-3xl md:text-4xl font-extrabold text-emerald-400 tracking-tight">--</div>
+              <div id="networth-sub" class="text-sm text-zinc-300 mt-1">--</div>
+            </div>
+
+            <div>
+              <div class="relative h-3 rounded-full bg-gradient-to-r from-rose-500/70 via-amber-400/70 to-emerald-400/80">
+                <div id="networth-marker" class="absolute top-1/2 w-4 h-4 -ml-2 -mt-2 rounded-full bg-white border-2 border-zinc-900 shadow" style="left:0%"></div>
+              </div>
+              <div class="flex justify-between text-[10px] text-zinc-600 font-mono mt-1"><span>Bottom</span><span>Top 10%</span><span>Top 1%</span><span>Top 0.00001%</span></div>
+            </div>
+
+            <div id="networth-richer" class="text-xs text-zinc-400">--</div>
+            <div id="networth-us" class="text-xs text-zinc-400">--</div>
+
+            <div class="rounded-xl bg-black/40 border border-zinc-800 p-4">
+              <h3 class="text-[11px] uppercase tracking-wider text-zinc-500 mb-2">Time for each billionaire to gain your entire net worth</h3>
+              <div id="networth-velocity"></div>
+            </div>
+          </div>
         </div>
-        <div class="flex rounded-lg bg-zinc-900 border border-zinc-800 p-0.5 text-xs">
-          <button id="chart-scale-log" class="px-3 py-1 rounded-md bg-zinc-800 text-zinc-100 font-medium">Logarithmic</button>
-          <button id="chart-scale-linear" class="px-3 py-1 rounded-md text-zinc-400 font-medium">Linear</button>
-        </div>
-      </div>
-      <div class="rounded-2xl glass-panel p-4 md:p-6 overflow-x-auto">
-        <div id="scale-chart-container"></div>
       </div>
     </section>
-  </main>
+    <!-- ===== 4. What It Buys ===== -->
+    <section aria-labelledby="buys-title" class="rounded-2xl glass-panel glow-emerald p-6 md:p-8">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+        <div>
+          <h2 id="buys-title" class="text-2xl font-bold tracking-tight">What It Buys</h2>
+          <p class="text-sm text-zinc-400 mt-1">Dollar figures stop meaning anything at this scale. So let's count things instead.</p>
+        </div>
+        <div class="flex flex-wrap gap-3 text-xs text-zinc-400">
+          <label class="flex items-center gap-2">Who
+            <select id="tangible-billionaire-select" class="bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1 text-zinc-200"></select>
+          </label>
+          <label class="flex items-center gap-2">In
+            <select id="tangible-window-select" class="bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1 text-zinc-200">
+              <option value="arrived">Since you arrived (live)</option>
+              <option value="second">1 second</option>
+              <option value="minute">1 minute</option>
+              <option value="hour">1 hour</option>
+              <option value="day">1 day</option>
+              <option value="week">1 week</option>
+              <option value="year">1 year</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div class="text-center py-4">
+        <div id="tangible-headline" class="text-sm text-zinc-400">--</div>
+        <div id="tangible-amount" class="text-4xl md:text-6xl font-mono font-extrabold text-emerald-400 tabular-nums tracking-tight my-2">$0.00</div>
+        <div id="tangible-lifetimes" class="text-sm md:text-base text-amber-400 font-medium">--</div>
+      </div>
+
+      <h3 class="text-xs uppercase tracking-wider text-zinc-500 mb-3 mt-4">That is the same as buying...</h3>
+      <div id="tangible-items" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+
+      <div class="mt-8 rounded-xl bg-black/40 border border-zinc-800 p-5">
+        <div class="flex flex-wrap items-baseline justify-between gap-2">
+          <h3 class="text-xs uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
+            <i data-lucide="layers" class="w-3.5 h-3.5 text-cyan-400"></i> Stacked as $100 bills
+          </h3>
+          <span id="tangible-stack-height" class="font-mono text-2xl font-bold text-cyan-400 tabular-nums">0 mm</span>
+        </div>
+        <div id="tangible-stack-compare" class="text-sm text-zinc-300 mt-1">--</div>
+        <div class="h-2 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden mt-3">
+          <div id="tangible-stack-bar" class="h-full bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-full" style="width:0%"></div>
+        </div>
+        <div class="flex justify-between text-[10px] text-zinc-600 font-mono mt-1"><span>1 mm</span><span>Moon</span></div>
+      </div>
+      <p class="text-[11px] text-zinc-600 mt-4">Prices are rough US averages for scale. Wealth velocity is the growth of net worth (mostly unrealized stock value), not spendable cash income.</p>
+    </section>  </main>
 
   <footer class="border-t border-zinc-900 mt-16">
     <div class="max-w-7xl mx-auto px-4 py-8 text-xs text-zinc-500 flex flex-wrap items-center justify-between gap-3">
@@ -272,7 +267,6 @@
         <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">Space</kbd> pause</span>
         <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">C</kbd> currency</span>
         <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">M</kbd> mode</span>
-        <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">S</kbd> sound</span>
         <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">?</kbd> methodology</span>
       </div>
     </div>
@@ -323,7 +317,7 @@
       </div>
 
       <div class="text-xs text-zinc-500 border-t border-zinc-800 pt-4">
-        Shortcuts: Space pause &middot; C currency &middot; M mode &middot; S sound &middot; P share &middot; R reset &middot; 1&ndash;5 speed &middot; ? this drawer &middot; Esc close
+        Shortcuts: Space pause &middot; C currency &middot; M mode &middot; P share &middot; R reset &middot; 1&ndash;5 speed &middot; ? this drawer &middot; Esc close
       </div>
     </div>
   </aside>
@@ -344,11 +338,10 @@
   <!-- ===== Scripts (order matters) ===== -->
   <script src="js/data.js"></script>
   <script src="js/engine.js"></script>
-  <script src="js/audio.js"></script>
   <script src="js/sync.js"></script>
   <script src="js/components.js"></script>
-  <script src="js/race.js"></script>
-  <script src="js/chart.js"></script>
+  <script src="js/tangible.js"></script>
+  <script src="js/networth.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

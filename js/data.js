@@ -15,9 +15,9 @@ const CURRENCIES = {
   },
   EUR: {
     code: 'EUR',
-    symbol: '€',
+    symbol: '\u20ac',
     rate: 0.925,
-    label: 'EUR (€)',
+    label: 'EUR (\u20ac)',
     flag: '🇪🇺'
   }
 };

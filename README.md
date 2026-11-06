@@ -1,4 +1,4 @@
-﻿# TICKS // Real-Time Wealth Velocity Engine
+# TICKS // Real-Time Wealth Velocity Engine
 
 > **Live Application**: [ticks.maksimluzik.com](https://ticks.maksimluzik.com)  
 > High-performance, zero-backend, interactive single-page visualization displaying real-time wealth accumulation per second of the world’s richest individuals alongside socioeconomic class benchmarks.
@@ -7,9 +7,9 @@
 
 ## ⚡ Overview
 
-**TICKS** is a client-side web application designed to bridge the human cognitive gap when conceptualizing extreme wealth disparity. Human perception is calibrated to hourly wages, monthly paychecks, and annual salaries. In contrast, modern billionaire wealth expands through exponential equity growth, capital appreciation, and asset inflation—operating at velocities where hundreds or thousands of dollars accumulate every fractions of a second.
+**TICKS** is a client-side web application designed to bridge the human cognitive gap when conceptualizing extreme wealth disparity. Human perception is calibrated to hourly wages, monthly paychecks, and annual salaries. In contrast, modern billionaire wealth expands through exponential equity growth, capital appreciation, and asset inflation—operating at velocities where hundreds or thousands of dollars accumulate every fraction of a second.
 
-TICKS visualizes this disparity through smooth 60fps real-time tickers, interactive side-by-side wage race simulations, dynamic class parity clocks, and logarithmic scale comparisons, running entirely in the browser with **zero build steps or backend servers**.
+TICKS visualizes this disparity through smooth 60fps real-time tickers, tangible "what it buys" translations, and dynamic class parity clocks, running entirely in the browser with **zero build steps or backend servers**.
 
 ---
 
@@ -25,7 +25,6 @@ Dedicated comparison rails calibrating standard income brackets into live fracti
 - **Lower Class**: ~$30,000/yr (~$0.00095/sec | ~$3.42/hr | ~$82.19/day) — *Bottom 20% income tier*.
 - **Middle Class**: ~$75,000/yr (~$0.00238/sec | ~$8.56/hr | ~$205.48/day) — *Median US household benchmark*.
 - **Upper-Middle Class**: ~$160,000/yr (~$0.00507/sec | ~$18.26/hr | ~$438.36/day) — *Top 15% household benchmark*.
-- **Baseline Anchors**: US Federal Minimum Wage ($15,080/yr), BLS Median Individual Worker ($59,384/yr), and Global Median Earner ($2,500/yr).
 - **Sub-Cent Accumulation**: Visualizes fractional micro-cents (`$0.000000`) climbing continuously.
 
 ### 3. Billionaire Leaderboard & Real-Time Velocity Cards
@@ -37,29 +36,21 @@ Live 60fps accumulation cards for the world's most prominent wealth accumulators
   - *e.g., "Surpassed Middle Class Annual Salary in 52.6s"*
   - *e.g., "Surpassed Upper-Middle Annual Salary in 112.3s"*
 
-### 4. Interactive "Race Your Salary & Class" Visualizer
-- **Preset or Custom Income**: One-click selection for Lower, Middle, and Upper-Middle class, or custom inputs for hourly wage, monthly pay, or annual salary in USD or EUR.
-- **Dual Progress Race**: Real-time visual race comparing the user's earnings against any selectable billionaire.
-- **Contextual Milestone Triggers**: Pop-in badge alerts whenever the billionaire accumulates relatable life expenses relative to the user's timeline:
-  - Specialty Espresso Drink ($6)
-  - Monthly Family Grocery Budget ($450)
-  - Median US Monthly Rent ($1,850)
-  - 6-Month Emergency Cushion ($18,000)
-  - Brand New Automobile ($38,000)
-  - 4-Year University Degree ($42,000)
-  - 20% Home Down Payment ($84,000)
-  - Full Home Cash Purchase ($420,000)
+### 4. "What It Buys" Tangible Wealth Translator
+Dollar figures stop meaning anything at this scale, so this section counts *things* instead.
+- **Pick a billionaire and a time window**: since you arrived (live), 1 second, 1 minute, 1 hour, 1 day, 1 week, or 1 year.
+- **Working Lifetimes**: Shows the gain as a share of (or multiple of) a typical 40-year US working career.
+- **Counted in Things**: Coffees, family pizza nights, months of rent, new cars, college degrees, teacher-years of salary, and houses paid in cash, each with a "one every N seconds" rate.
+- **Stack of $100 Bills**: The physical height of the gain, compared with a giraffe, the Statue of Liberty, the Eiffel Tower, Mount Everest, the edge of space, and the Moon.
 
-### 5. Comparative Scale Visualizer (Logarithmic vs. Linear)
-- Zero-dependency SVG visualizer charting standard income levels against billionaire velocities.
-- Switchable between **Logarithmic Scale** (to perceive all tiers on one canvas) and **Linear Scale** (demonstrating how working-class bars flatten to invisible sub-pixel slivers).
+### 5. "Where Do You Rank?" Net Worth Calculator
+- Enter your net worth (in USD or EUR) to see which **top %** of the world's adults you fall into, plus how many adults have more or less than you.
+- Shows your approximate standing among US households and how long each billionaire takes to gain your entire net worth.
+- Runs fully in the browser; estimates are interpolated from rounded UBS, Federal Reserve SCF and Forbes figures and are for scale only.
 
 ### 6. Dynamic Live Data Sync
 - **Forbes Real-Time Billionaires**: Automatically syncs daily net-worth historical time series directly in the browser via `komed3/rtb-api`.
 - **Live FX Currency Exchange**: Fetches up-to-date USD/EUR currency exchange rates via `open.er-api.com` with seamless offline fallbacks.
-
-### 7. Synthesized Web Audio
-- Procedural audio cues using the native browser **Web Audio API** (subtle mechanical ticks and harmonic milestone chimes) without external MP3/WAV assets.
 
 ---
 
@@ -138,6 +129,10 @@ The exact seconds required for a billionaire to accumulate the entire annual inc
 
 $$T_{\text{parity}} = \frac{\text{Annual Income}_{\text{Tier}}}{v_{\text{Billionaire}}}$$
 
+### Tangible Translation
+
+Each item count is simply `gain / price`, with the gain being `v × window seconds`. Prices are rough US averages used for scale only. Working lifetimes use the median US worker ($59,384/yr) over a 40-year career. The bill stack uses a $100 bill thickness of 0.109 mm.
+
 ---
 
 ## 🛠️ Tech Stack & Architecture
@@ -150,17 +145,16 @@ TICKS is intentionally built with **zero external build tools, bundlers, or pack
 ├─────────────────────────────────────────────────────────────┤
 │  • HTML5 Semantic Shell (index.html)                        │
 │  • Tailwind CSS via CDN (Utility-first dark fintech system) │
+│  • Google Tag Manager (analytics, GTM-K5FRBM)               │
 │  • Lucide Icons via CDN (Vector iconography)                │
 │  • KaTeX via CDN (LaTeX math rendering in Methodology drawer)│
-│  • Native Web Audio API (Synthesized clicks & chimes)       │
 ├─────────────────────────────────────────────────────────────┤
 │                         Core Engine                         │
 │  ├── engine.js        (RAF 60fps loop, timer, accumulators) │
 │  ├── data.js          (Curated profiles, benchmarks, tiers) │
 │  ├── components.js    (UI renderers, DOM cache, parity)     │
-│  ├── race.js          (Race Visualizer, presets, milestones)│
-│  ├── chart.js         (Zero-dep SVG Log & Linear charts)    │
-│  ├── audio.js         (Synthetic procedural sound synthesis)│
+│  ├── tangible.js      (What It Buys: items, bill stack)     │
+│  ├── networth.js      (Net worth percentile calculator)     │
 │  ├── sync.js          (Forbes RTB & FX live client fetch)   │
 │  └── app.js           (State orchestrator & keyboard events)│
 └─────────────────────────────────────────────────────────────┘
@@ -194,12 +188,11 @@ ticks/
 │   └── style.css          # Custom animations, glow effects, monospace tabular rules
 ├── js/
 │   ├── app.js             # Application bootstrapper, keyboard shortcuts, DOM events
-│   ├── audio.js           # Web Audio API procedural sound synthesizer
-│   ├── chart.js           # Interactive SVG logarithmic & linear velocity chart
+│   ├── tangible.js        # "What It Buys" tangible wealth translator
+│   ├── networth.js        # Net worth world/US percentile calculator
 │   ├── components.js      # Socioeconomic rails, billionaire cards, class parity clocks
-│   ├── data.js            # Billionaire records, socioeconomic benchmarks, milestones
+│   ├── data.js            # Billionaire records, socioeconomic benchmarks
 │   ├── engine.js          # High-precision RAF calculation & state engine
-│   ├── race.js            # "Race Your Salary" interactive comparison module
 │   └── sync.js            # Forbes Real-Time Billionaires API & Open Exchange fetcher
 └── README.md              # Project documentation & economic references
 ```
@@ -213,7 +206,6 @@ ticks/
 | <kbd>Space</kbd> | Pause / Resume real-time accumulation |
 | <kbd>C</kbd> | Toggle Currency between USD ($) and EUR (€) |
 | <kbd>M</kbd> | Toggle Calculation Mode (5-Year Annualized vs. TTM) |
-| <kbd>S</kbd> | Toggle Mechanical Sound Ticks |
 | <kbd>?</kbd> | Open Methodology, Calculations & Formula Drawer |
 | <kbd>1</kbd>–<kbd>5</kbd> | Set Speed Multiplier (`1x`, `5x`, `10x`, `60x`, `3600x`) |
 | <kbd>P</kbd> | Open Share Snapshot modal |
@@ -244,9 +236,8 @@ Visit `http://localhost:8989` in your web browser.
 
 ### GitHub Pages Deployment
 1. Commit and push files to your repository's `main` branch. A workflow (`.github/workflows/pages.yml`) deploys automatically when **Settings → Pages → Source** is set to **GitHub Actions**; alternatively choose `Deploy from a branch` → `main` / `root` (`.nojekyll` is included).
-2. In GitHub repository settings: **Pages** → **Source** → `Deploy from a branch` → `main` / `root`.
-3. Configure the custom domain `ticks.maksimluzik.com` (persisted in the root `CNAME` file).
-4. Point DNS CNAME record:
+2. Configure the custom domain `ticks.maksimluzik.com` (persisted in the root `CNAME` file).
+3. Point DNS CNAME record:
    - Host: `ticks`
    - Value: `<your-github-username>.github.io`
    - Enable **Enforce HTTPS**.
@@ -257,4 +248,3 @@ Visit `http://localhost:8989` in your web browser.
 - Built by [Maksim Luzik](https://maksimluzik.com).
 - Data sources: Forbes Real-Time Billionaires (RTB), U.S. Federal Reserve SCF, U.S. Bureau of Labor Statistics, World Inequality Database (WID).
 - Open-sourced under the [MIT License](LICENSE).
-

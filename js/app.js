@@ -1,4 +1,4 @@
-﻿/**
+/**
  * TICKS // Application Orchestrator & State Controller
  * Binds global header controls, RAF animation loop, modal drawers,
  * and keyboard shortcuts.
@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize Core Systems
   window.engine.init();
   window.uiComponents.init();
-  window.raceVisualizer.init();
-  window.scaleChart.init();
+  window.tangibleWealth.init();
+  window.netWorthRank.init();
 
-  // Populate Billionaire Select Options in Race Arena
+  // Populate billionaire select options
   populateBillionaireDropdowns();
 
   // Bind Global Header & Navigation Controls
@@ -28,6 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render KaTeX Formulas in Methodology drawer
   renderMathFormulas();
+
+  updateCurrencyButtonUi();
 
   // Initialize Lucide Icons
   if (window.lucide) {
@@ -47,12 +49,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function populateBillionaireDropdowns() {
-  const raceSelect = document.getElementById('race-billionaire-select');
+  const raceSelect = document.getElementById('tangible-billionaire-select');
   const humanScaleSelect = document.getElementById('human-scale-billionaire-select');
 
   if (raceSelect) {
     raceSelect.innerHTML = TICKS_DATA.BILLIONAIRES.map(b => `
-      <option value="${b.id}">${b.name} (${b.companies[0]})</option>
+      <option value="${b.id}" ${b.id === window.tangibleWealth.billionaireId ? 'selected' : ''}>${b.name}</option>
     `).join('');
   }
 
@@ -125,17 +127,7 @@ function bindGlobalControls() {
   if (resetBtn) {
     resetBtn.addEventListener('click', () => {
       window.engine.resetSession();
-      window.raceVisualizer.resetMilestones();
       updatePauseButtonUi(false);
-    });
-  }
-
-  // 6. Sound Toggle
-  const soundBtn = document.getElementById('btn-toggle-sound');
-  if (soundBtn) {
-    soundBtn.addEventListener('click', () => {
-      const enabled = window.soundEngine.toggle();
-      updateSoundButtonUi(enabled);
     });
   }
 }
@@ -163,7 +155,7 @@ function setModeUI(mode) {
 function updateCurrencyButtonUi() {
   const label = document.getElementById('currency-btn-label');
   if (label) {
-    label.textContent = window.engine.currency === 'USD' ? 'USD ($)' : 'EUR (â‚¬)';
+    label.textContent = TICKS_DATA.CURRENCIES[window.engine.currency].label;
   }
 }
 
@@ -174,25 +166,6 @@ function updatePauseButtonUi(isPaused) {
       ? `<i data-lucide="play" class="w-3.5 h-3.5 text-emerald-400"></i><span>Resume</span>`
       : `<i data-lucide="pause" class="w-3.5 h-3.5 text-amber-400"></i><span>Pause</span>`;
     if (window.lucide) window.lucide.createIcons({ root: pauseBtn });
-  }
-}
-
-function updateSoundButtonUi(enabled) {
-  const icon = document.getElementById('sound-icon');
-  const label = document.getElementById('sound-label');
-  if (icon && label) {
-    if (enabled) {
-      icon.innerHTML = `<i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>`;
-      label.textContent = 'Audio On';
-      label.classList.add('text-emerald-400');
-      label.classList.remove('text-zinc-400');
-    } else {
-      icon.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4 text-zinc-400"></i>`;
-      label.textContent = 'Audio Off';
-      label.classList.remove('text-emerald-400');
-      label.classList.add('text-zinc-400');
-    }
-    if (window.lucide) window.lucide.createIcons({ root: icon });
   }
 }
 
@@ -253,7 +226,7 @@ function bindModals() {
     copySnapshotBtn.addEventListener('click', () => {
       const text = generateSnapshotText();
       navigator.clipboard.writeText(text).then(() => {
-        copySnapshotBtn.textContent = 'Copied to Clipboard! âœ“';
+        copySnapshotBtn.textContent = 'Copied to Clipboard! ✓';
         setTimeout(() => {
           copySnapshotBtn.textContent = 'Copy Text Snapshot';
         }, 2000);
@@ -272,8 +245,8 @@ function populateSnapshotPreview() {
   if (preview) {
     preview.innerHTML = `
       <div class="space-y-3 font-mono text-xs">
-        <div class="text-zinc-400">â± Session Duration: <span class="text-white font-bold">${timeStr}</span></div>
-        <div class="text-zinc-400">ðŸ’° Combined Billionaires Accumulated: <span class="text-emerald-400 font-bold">${combinedStr}</span></div>
+        <div class="text-zinc-400">⏱ Session Duration: <span class="text-white font-bold">${timeStr}</span></div>
+        <div class="text-zinc-400">💰 Combined Billionaires Accumulated: <span class="text-emerald-400 font-bold">${combinedStr}</span></div>
         <div class="border-t border-zinc-800 pt-2 text-zinc-400">
           In this visit alone:
           <ul class="list-disc list-inside mt-1 space-y-1 text-zinc-300">
@@ -297,10 +270,10 @@ function generateSnapshotText() {
   const musk = window.engine.formatCurrency(window.engine.getBillionairePerSecond(TICKS_DATA.BILLIONAIRES[0]) * elapsed);
   const middle = window.engine.formatMicroCurrency((window.engine.convertAmount(75000) / TICKS_DATA.SECONDS_IN_YEAR) * elapsed);
 
-  return `â± In the ${timeStr} I spent on ticks.maksimluzik.com:
-â€¢ The top 7 billionaires accumulated ${combinedStr} combined.
-â€¢ Elon Musk made ${musk}.
-â€¢ A middle-class household earned ${middle}.
+  return `⏱ In the ${timeStr} I spent on ticks.maksimluzik.com:
+• The top 7 billionaires accumulated ${combinedStr} combined.
+• Elon Musk made ${musk}.
+• A middle-class household earned ${middle}.
 
 Track real-time wealth velocity live: https://ticks.maksimluzik.com`;
 }
@@ -334,8 +307,6 @@ function bindKeyboardShortcuts() {
       click('btn-toggle-currency');
     } else if (e.key === 'm' || e.key === 'M') {
       setModeUI(window.engine.mode === '5yr' ? 'ttm' : '5yr');
-    } else if (e.key === 's' || e.key === 'S') {
-      click('btn-toggle-sound');
     } else if (e.key === 'p' || e.key === 'P') {
       click('btn-share-snapshot');
     } else if (e.key === 'r' || e.key === 'R') {
@@ -371,23 +342,12 @@ function renderMathFormulas() {
 
 // --- High Performance 60fps Animation Loop ---
 function startAnimationLoop() {
-  let lastTickSoundSecond = 0;
-
   function frame(now) {
     const elapsedSecs = window.engine.updateTime(now);
 
     // Update UI components
     window.uiComponents.updateFrame(elapsedSecs);
-    window.raceVisualizer.updateFrame(elapsedSecs);
-
-    // Trigger subtle audio tick every full second elapsed
-    const currentFloorSec = Math.floor(elapsedSecs);
-    if (currentFloorSec > lastTickSoundSecond) {
-      lastTickSoundSecond = currentFloorSec;
-      if (window.soundEngine) {
-        window.soundEngine.playSubtleTick();
-      }
-    }
+    window.tangibleWealth.updateFrame(elapsedSecs);
 
     requestAnimationFrame(frame);
   }
