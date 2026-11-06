@@ -121,9 +121,9 @@ class NetWorthRank {
       ? `Only 1 in ${oneIn.toLocaleString('en-US')} adults is wealthier than you.`
       : `Richer than ${worldBelow.toFixed(worldBelow > 99 ? 2 : 0)}% of the world's adults.`;
 
-    // Position marker on a 0..100 bar using a log-ish scale of "top %"
-    // so differences at the extreme top remain visible.
-    const pos = Math.min(100, Math.max(0, (Math.log10(100 / worldTop) / Math.log10(100 / minTop)) * 100));
+    // Marker position = wealth percentile (left = poorest, right = richest),
+    // so the top 2.7% lands at 97.3% on the green side.
+    const pos = Math.min(99.5, Math.max(0.5, worldBelow));
     n.marker.style.left = `${pos.toFixed(1)}%`;
 
     n.richer.textContent = `About ${this.formatPeople(peopleAhead)} adults have more than you; ${this.formatPeople((worldBelow / 100) * this.WORLD_ADULTS)} have less.`;
