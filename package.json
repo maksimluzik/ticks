@@ -1,0 +1,11 @@
+{
+  "name": "ticks",
+  "version": "1.0.0",
+  "description": "TICKS - Real-Time Wealth Velocity Engine (static site, no build step)",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "start": "npx --yes serve -l 8989 ."
+  }
+}
+

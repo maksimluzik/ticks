@@ -305,6 +305,19 @@ class RaceVisualizer {
       }
     ];
 
+    // Merge relatable life-expense milestones from the curated dataset
+    const knownIds = new Set(milestonesToCheck.map(m => m.id));
+    (TICKS_DATA.RELATABLE_MILESTONES || []).forEach(rm => {
+      if (knownIds.has(rm.id)) return;
+      milestonesToCheck.push({
+        id: rm.id,
+        name: rm.name.replace(/\s*\(\$[\d,]+\)\s*$/, ''),
+        amount: window.engine.convertAmount(rm.amountUSD),
+        icon: rm.icon || 'star',
+        color: 'text-amber-300'
+      });
+    });
+
     // Sort by threshold amount
     milestonesToCheck.sort((a, b) => a.amount - b.amount);
 

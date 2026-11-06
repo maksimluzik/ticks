@@ -51,6 +51,14 @@ class ScaleChart {
         color: t.color,
         isBillionaire: false
       })),
+      ...(TICKS_DATA.BONUS_BENCHMARKS || []).map(t => ({
+        id: t.id,
+        name: t.name,
+        category: 'Baseline Anchor',
+        annualUSD: t.annualUSD,
+        color: '#a1a1aa',
+        isBillionaire: false
+      })),
       ...TICKS_DATA.BILLIONAIRES.map(b => ({
         id: b.id,
         name: b.name,

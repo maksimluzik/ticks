@@ -1,4 +1,4 @@
-/**
+﻿/**
  * TICKS // Application Orchestrator & State Controller
  * Binds global header controls, RAF animation loop, modal drawers,
  * and keyboard shortcuts.
@@ -163,7 +163,7 @@ function setModeUI(mode) {
 function updateCurrencyButtonUi() {
   const label = document.getElementById('currency-btn-label');
   if (label) {
-    label.textContent = window.engine.currency === 'USD' ? 'USD ($)' : 'EUR (€)';
+    label.textContent = window.engine.currency === 'USD' ? 'USD ($)' : 'EUR (â‚¬)';
   }
 }
 
@@ -253,7 +253,7 @@ function bindModals() {
     copySnapshotBtn.addEventListener('click', () => {
       const text = generateSnapshotText();
       navigator.clipboard.writeText(text).then(() => {
-        copySnapshotBtn.textContent = 'Copied to Clipboard! ✓';
+        copySnapshotBtn.textContent = 'Copied to Clipboard! âœ“';
         setTimeout(() => {
           copySnapshotBtn.textContent = 'Copy Text Snapshot';
         }, 2000);
@@ -272,8 +272,8 @@ function populateSnapshotPreview() {
   if (preview) {
     preview.innerHTML = `
       <div class="space-y-3 font-mono text-xs">
-        <div class="text-zinc-400">⏱ Session Duration: <span class="text-white font-bold">${timeStr}</span></div>
-        <div class="text-zinc-400">💰 Combined Billionaires Accumulated: <span class="text-emerald-400 font-bold">${combinedStr}</span></div>
+        <div class="text-zinc-400">â± Session Duration: <span class="text-white font-bold">${timeStr}</span></div>
+        <div class="text-zinc-400">ðŸ’° Combined Billionaires Accumulated: <span class="text-emerald-400 font-bold">${combinedStr}</span></div>
         <div class="border-t border-zinc-800 pt-2 text-zinc-400">
           In this visit alone:
           <ul class="list-disc list-inside mt-1 space-y-1 text-zinc-300">
@@ -297,47 +297,56 @@ function generateSnapshotText() {
   const musk = window.engine.formatCurrency(window.engine.getBillionairePerSecond(TICKS_DATA.BILLIONAIRES[0]) * elapsed);
   const middle = window.engine.formatMicroCurrency((window.engine.convertAmount(75000) / TICKS_DATA.SECONDS_IN_YEAR) * elapsed);
 
-  return `⏱ In the ${timeStr} I spent on ticks.maksimluzik.com:
-• The top 7 billionaires accumulated ${combinedStr} combined.
-• Elon Musk made ${musk}.
-• A middle-class household earned ${middle}.
+  return `â± In the ${timeStr} I spent on ticks.maksimluzik.com:
+â€¢ The top 7 billionaires accumulated ${combinedStr} combined.
+â€¢ Elon Musk made ${musk}.
+â€¢ A middle-class household earned ${middle}.
 
 Track real-time wealth velocity live: https://ticks.maksimluzik.com`;
 }
 
 function bindKeyboardShortcuts() {
   window.addEventListener('keydown', (e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
     // Avoid shortcuts if user is typing in custom input
     if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
       return;
     }
 
+    const click = (id) => {
+      const el = document.getElementById(id);
+      if (el) el.click();
+    };
+
     if (e.code === 'Space') {
       e.preventDefault();
       const isPaused = window.engine.togglePause();
       updatePauseButtonUi(isPaused);
-    } else if (e.key === 'r' || e.key === 'R') {
-      window.engine.resetSession();
-      window.raceVisualizer.resetMilestones();
-      updatePauseButtonUi(false);
+    } else if (e.key === 'Escape') {
+      const drawer = document.getElementById('methodology-drawer');
+      if (drawer && !drawer.classList.contains('translate-x-full')) click('btn-close-methodology');
+      const modal = document.getElementById('snapshot-modal');
+      if (modal && !modal.classList.contains('hidden')) click('btn-close-snapshot');
+    } else if (e.key === '?') {
+      click('btn-open-methodology');
     } else if (e.key === 'c' || e.key === 'C') {
-      const nextCurrency = window.engine.currency === 'USD' ? 'EUR' : 'USD';
-      window.engine.setCurrency(nextCurrency);
-      updateCurrencyButtonUi();
-      window.uiComponents.refreshAllTextForCurrencyOrMode();
+      click('btn-toggle-currency');
     } else if (e.key === 'm' || e.key === 'M') {
-      const methodBtn = document.getElementById('btn-open-methodology');
-      if (methodBtn) methodBtn.click();
+      setModeUI(window.engine.mode === '5yr' ? 'ttm' : '5yr');
     } else if (e.key === 's' || e.key === 'S') {
-      const snapshotBtn = document.getElementById('btn-share-snapshot');
-      if (snapshotBtn) snapshotBtn.click();
-    } else if (e.key === 'a' || e.key === 'A') {
-      const enabled = window.soundEngine.toggle();
-      updateSoundButtonUi(enabled);
+      click('btn-toggle-sound');
+    } else if (e.key === 'p' || e.key === 'P') {
+      click('btn-share-snapshot');
+    } else if (e.key === 'r' || e.key === 'R') {
+      click('btn-reset-session');
+    } else if (/^[1-5]$/.test(e.key)) {
+      const mults = [1, 5, 10, 60, 3600];
+      const btn = document.querySelector(`#speed-multipliers [data-multiplier="${mults[Number(e.key) - 1]}"]`);
+      if (btn) btn.click();
     }
   });
 }
-
 function renderMathFormulas() {
   if (typeof katex !== 'undefined') {
     const formulaContainer = document.getElementById('katex-formula');

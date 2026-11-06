@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TICKS // Real-Time Wealth Velocity Engine</title>
+  <meta name="description" content="Watch real-time wealth accumulate per second for the world's richest people, side by side with the income of everyday workers." />
+  <meta name="theme-color" content="#09090b" />
+  <link rel="canonical" href="https://ticks.maksimluzik.com/" />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ticks.maksimluzik.com/" />
+  <meta property="og:title" content="TICKS // Real-Time Wealth Velocity Engine" />
+  <meta property="og:description" content="How fast do billionaires get richer? Race your salary against them, second by second." />
+  <meta name="twitter:card" content="summary" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2309090b'/%3E%3Cpath d='M7 17l5 5 13-13' stroke='%2310b981' stroke-width='3.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+
+  <!-- Third-party (CDN) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen">
+
+  <!-- ===== Header ===== -->
+  <header class="sticky top-0 z-30 glass-panel border-b border-zinc-800/80">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center live-pulse-glow">
+          <i data-lucide="activity" class="w-4 h-4 text-emerald-400"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-extrabold tracking-tight leading-none">TICKS <span class="text-zinc-500 font-medium">//</span> <span class="text-emerald-400">Wealth Velocity</span></h1>
+          <p class="text-[11px] text-zinc-500 mt-0.5">Real-time wealth per second</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2">
+        <div id="live-sync-indicator"></div>
+
+        <div class="flex rounded-lg bg-zinc-900 border border-zinc-800 p-0.5 text-xs" role="tablist" aria-label="Calculation mode">
+          <button id="mode-tab-5yr" class="px-2.5 py-1 rounded-md bg-zinc-800 text-emerald-400 shadow font-medium" title="5-year annualized growth (M)">5Y Avg</button>
+          <button id="mode-tab-ttm" class="px-2.5 py-1 rounded-md text-zinc-400 font-medium" title="Trailing 12 months (M)">TTM</button>
+        </div>
+
+        <button id="btn-toggle-currency" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Toggle currency (C)">
+          <i data-lucide="coins" class="w-3.5 h-3.5 text-amber-400"></i>
+          <span id="currency-btn-label">USD ($)</span>
+        </button>
+
+        <button id="btn-toggle-sound" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Toggle sound (S)">
+          <span id="sound-icon"><i data-lucide="volume-x" class="w-4 h-4 text-zinc-400"></i></span>
+          <span id="sound-label" class="text-zinc-400">Audio Off</span>
+        </button>
+
+        <button id="btn-share-snapshot" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Share snapshot (P)">
+          <i data-lucide="share-2" class="w-3.5 h-3.5 text-cyan-400"></i><span>Share</span>
+        </button>
+
+        <button id="btn-open-methodology" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600 transition-colors" title="Methodology (?)">
+          <i data-lucide="calculator" class="w-3.5 h-3.5 text-emerald-400"></i><span>Methodology</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 py-8 space-y-14">
+
+    <!-- ===== 1. Hero / Session Tracker ===== -->
+    <section aria-labelledby="hero-title" class="relative rounded-2xl glass-panel glow-emerald p-6 md:p-10 overflow-hidden">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <h2 id="hero-title" class="text-xs uppercase tracking-[0.2em] text-zinc-400 font-semibold flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Since you arrived
+        </h2>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <div id="speed-multipliers" class="flex gap-1 text-xs font-mono" aria-label="Simulation speed">
+            <button data-multiplier="1" class="px-2.5 py-1 rounded-md border bg-emerald-500/20 border-emerald-500 text-emerald-300">1x</button>
+            <button data-multiplier="5" class="px-2.5 py-1 rounded-md border bg-zinc-900 border-zinc-800 text-zinc-400">5x</button>
+            <button data-multiplier="10" class="px-2.5 py-1 rounded-md border bg-zinc-900 border-zinc-800 text-zinc-400">10x</button>
+            <button data-multiplier="60" class="px-2.5 py-1 rounded-md border bg-zinc-900 border-zinc-800 text-zinc-400">60x</button>
+            <button data-multiplier="3600" class="px-2.5 py-1 rounded-md border bg-zinc-900 border-zinc-800 text-zinc-400">3600x</button>
+          </div>
+          <button id="btn-pause-session" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600">
+            <i data-lucide="pause" class="w-3.5 h-3.5 text-amber-400"></i><span>Pause</span>
+          </button>
+          <button id="btn-reset-session" class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-900 border border-zinc-800 text-xs hover:border-zinc-600" title="Reset (R)">
+            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-zinc-400"></i><span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8 items-end">
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-zinc-500 mb-1">Time on page</div>
+          <div id="hero-elapsed-time" class="text-5xl md:text-7xl font-mono font-extrabold tabular-nums tracking-tight">00:00:00.0</div>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase tracking-wider text-zinc-500 mb-1 flex items-center justify-between">
+            <span>Combined wealth generated by featured billionaires</span>
+            <span id="hero-combined-sec-rate" class="font-mono text-emerald-500/80 normal-case">+$0.00/sec</span>
+          </div>
+          <div id="hero-total-combined" class="text-4xl md:text-5xl font-mono font-extrabold tabular-nums text-emerald-400 tracking-tight">$0.00</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mt-8 pt-6 border-t border-zinc-800/80 text-sm">
+        <div class="text-zinc-400">
+          That's <span id="hero-middle-class-equiv" class="font-mono font-bold text-cyan-400">0.0x</span> a middle-class annual salary.
+        </div>
+        <div class="text-zinc-400">
+          That's <span id="hero-minwage-equiv" class="font-mono font-bold text-rose-400">0.0x</span> a minimum-wage worker's year.
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 2. The Human Scale ===== -->
+    <section aria-labelledby="human-title">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h2 id="human-title" class="text-2xl font-bold tracking-tight">The Human Scale</h2>
+          <p class="text-sm text-zinc-400 mt-1">What ordinary income looks like, second by second.</p>
+        </div>
+        <label class="text-xs text-zinc-400 flex items-center gap-2">
+          Compare against
+          <select id="human-scale-billionaire-select" class="bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1 text-zinc-200"></select>
+        </label>
+      </div>
+      <div id="socioeconomic-rail" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ===== 3. Billionaire Leaderboard ===== -->
+    <section aria-labelledby="leaderboard-title">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h2 id="leaderboard-title" class="text-2xl font-bold tracking-tight">Billionaire Velocity Leaderboard</h2>
+          <p class="text-sm text-zinc-400 mt-1">Live accumulation since you opened this tab.</p>
+        </div>
+        <label class="text-xs text-zinc-400 flex items-center gap-2">
+          Sort by
+          <select id="billionaire-sort-select" class="bg-zinc-900 border border-zinc-800 rounded-md px-2 py-1 text-zinc-200">
+            <option value="velocity">Velocity</option>
+            <option value="networth">Net worth</option>
+            <option value="name">Name</option>
+          </select>
+        </label>
+      </div>
+      <div id="billionaire-cards-grid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- ===== 4. Race Your Salary ===== -->
+    <section aria-labelledby="race-title" class="rounded-2xl glass-panel p-6 md:p-8">
+      <h2 id="race-title" class="text-2xl font-bold tracking-tight">Race Your Salary</h2>
+      <p class="text-sm text-zinc-400 mt-1 mb-6">Pick an income and a billionaire. Watch who gets there first.</p>
+
+      <div class="grid lg:grid-cols-3 gap-6">
+        <!-- Controls -->
+        <div class="space-y-4">
+          <div id="race-presets" class="flex flex-wrap gap-2 text-xs">
+            <button data-preset-id="min_wage" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Minimum Wage</button>
+            <button data-preset-id="lower_class" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Lower ($30k)</button>
+            <button data-preset-id="us_median" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">US Median ($59k)</button>
+            <button data-preset-id="middle_class" class="px-2.5 py-1.5 rounded-lg border bg-cyan-500/20 border-cyan-500 text-cyan-300">Middle ($75k)</button>
+            <button data-preset-id="engineer" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Software Eng ($140k)</button>
+            <button data-preset-id="upper_middle" class="px-2.5 py-1.5 rounded-lg border bg-zinc-900/60 border-zinc-800 text-zinc-400">Upper-Middle ($160k)</button>
+          </div>
+
+          <div class="flex gap-2">
+            <input id="custom-salary-input" type="number" min="0" step="any" value="75000" aria-label="Your income"
+                   class="flex-1 min-w-0 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:border-cyan-500" />
+            <select id="custom-salary-period" aria-label="Income period" class="bg-zinc-900 border border-zinc-800 rounded-lg px-2 text-sm">
+              <option value="annual">/ year</option>
+              <option value="monthly">/ month</option>
+              <option value="hourly">/ hour</option>
+            </select>
+          </div>
+
+          <label class="block text-xs text-zinc-400">
+            Race against
+            <select id="race-billionaire-select" class="mt-1 w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-200"></select>
+          </label>
+
+          <div class="text-xs text-zinc-500 font-mono space-y-0.5">
+            <div>You: <span id="user-rate-per-sec" class="text-cyan-400">--</span></div>
+            <div>You: <span id="user-rate-per-hr" class="text-cyan-400">--</span></div>
+          </div>
+        </div>
+
+        <!-- Race track -->
+        <div class="lg:col-span-2 space-y-5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-zinc-500 uppercase tracking-wider">Progress toward your annual salary</span>
+            <span id="race-ratio-badge" class="px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-400 text-xs font-mono font-bold">--</span>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-cyan-400 font-medium">You</span>
+              <span id="race-user-accumulated" class="font-mono text-zinc-300 tabular-nums">$0.00000</span>
+            </div>
+            <div class="h-3 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
+              <div id="race-user-progress-bar" class="h-full bg-cyan-500 rounded-full" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-emerald-400 font-medium">Billionaire</span>
+              <span id="race-billionaire-accumulated" class="font-mono text-zinc-300 tabular-nums">$0.00</span>
+            </div>
+            <div class="h-3 rounded-full bg-zinc-900 border border-zinc-800 overflow-hidden">
+              <div id="race-billionaire-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full" style="width:0%"></div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="rounded-lg bg-zinc-950/60 border border-zinc-800 p-3">
+              <div class="text-[10px] uppercase text-zinc-500">Your month</div>
+              <div id="time-for-user-monthly" class="font-mono font-bold text-amber-400 text-sm mt-1">--</div>
+            </div>
+            <div class="rounded-lg bg-zinc-950/60 border border-zinc-800 p-3">
+              <div class="text-[10px] uppercase text-zinc-500">Your year</div>
+              <div id="time-for-user-annual" class="font-mono font-bold text-amber-400 text-sm mt-1">--</div>
+            </div>
+            <div class="rounded-lg bg-zinc-950/60 border border-zinc-800 p-3">
+              <div class="text-[10px] uppercase text-zinc-500">40-year career</div>
+              <div id="time-for-user-career" class="font-mono font-bold text-amber-400 text-sm mt-1">--</div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-xs uppercase tracking-wider text-zinc-500 mb-2">Milestones unlocked</h3>
+            <div id="milestone-feed" class="space-y-2">
+              <div class="text-xs text-zinc-500 italic py-2 text-center" id="empty-milestone-msg">Live milestones unlock automatically as seconds tick...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 5. Comparative Scale ===== -->
+    <section aria-labelledby="chart-title">
+      <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+        <div>
+          <h2 id="chart-title" class="text-2xl font-bold tracking-tight">Comparative Scale</h2>
+          <p class="text-sm text-zinc-400 mt-1">Switch to linear to see working-class income vanish.</p>
+        </div>
+        <div class="flex rounded-lg bg-zinc-900 border border-zinc-800 p-0.5 text-xs">
+          <button id="chart-scale-log" class="px-3 py-1 rounded-md bg-zinc-800 text-zinc-100 font-medium">Logarithmic</button>
+          <button id="chart-scale-linear" class="px-3 py-1 rounded-md text-zinc-400 font-medium">Linear</button>
+        </div>
+      </div>
+      <div class="rounded-2xl glass-panel p-4 md:p-6 overflow-x-auto">
+        <div id="scale-chart-container"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-zinc-900 mt-16">
+    <div class="max-w-7xl mx-auto px-4 py-8 text-xs text-zinc-500 flex flex-wrap items-center justify-between gap-3">
+      <div>
+        Built by <a href="https://maksimluzik.com" class="text-emerald-400 hover:underline">Maksim Luzik</a>.
+        Data: Forbes Real-Time Billionaires, U.S. Federal Reserve SCF, BLS, WID. Figures are estimates for illustration.
+      </div>
+      <div class="hidden md:flex items-center gap-3 font-mono">
+        <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">Space</kbd> pause</span>
+        <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">C</kbd> currency</span>
+        <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">M</kbd> mode</span>
+        <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">S</kbd> sound</span>
+        <span><kbd class="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800">?</kbd> methodology</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== Methodology Drawer ===== -->
+  <div id="methodology-backdrop" class="hidden fixed inset-0 z-40 bg-black/60 opacity-0 transition-opacity duration-300"></div>
+  <aside id="methodology-drawer" role="dialog" aria-label="Methodology"
+         class="fixed top-0 right-0 z-50 h-full w-full max-w-lg bg-zinc-950 border-l border-zinc-800 shadow-2xl overflow-y-auto transform translate-x-full transition-transform duration-300">
+    <div class="p-6 space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold">Methodology</h2>
+        <button id="btn-close-methodology" class="p-1.5 rounded-lg hover:bg-zinc-900" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-2 text-sm text-zinc-300">
+        <h3 class="font-semibold text-emerald-400">Wealth velocity vs. cash income</h3>
+        <p><strong>W-2 income</strong> is a flow of cash paid for labor hours. <strong>Wealth velocity</strong> is the change in market value of equity, options, dividends and real assets. They're different things &mdash; TICKS compares them to show scale, not to claim billionaires are paid this as salary.</p>
+      </div>
+
+      <div class="space-y-2 text-sm text-zinc-300">
+        <h3 class="font-semibold text-emerald-400">Velocity formula</h3>
+        <div id="katex-formula" class="overflow-x-auto py-2">Velocity = &Delta;Net Worth / 31,536,000 s</div>
+        <p class="text-zinc-400 text-xs">31,536,000 = 365 &times; 24 &times; 3,600 seconds in a standard year.</p>
+      </div>
+
+      <div class="space-y-2 text-sm text-zinc-300">
+        <h3 class="font-semibold text-emerald-400">Calculation modes</h3>
+        <ul class="list-disc list-inside space-y-1">
+          <li><strong>5-Year Annualized</strong> (default): (NW<sub>t</sub> &minus; NW<sub>t&minus;5</sub>) / 5. Smooths volatility.</li>
+          <li><strong>TTM</strong>: NW<sub>t</sub> &minus; NW<sub>t&minus;1</sub>. Captures recent momentum.</li>
+        </ul>
+      </div>
+
+      <div class="space-y-2 text-sm text-zinc-300">
+        <h3 class="font-semibold text-emerald-400">Class parity time</h3>
+        <div id="katex-parity-formula" class="overflow-x-auto py-2">T = Annual Income / Velocity</div>
+        <p class="text-zinc-400 text-xs">Seconds for a billionaire to accumulate a full year of a tier's income.</p>
+      </div>
+
+      <div class="space-y-2 text-sm text-zinc-300">
+        <h3 class="font-semibold text-emerald-400">Data sources</h3>
+        <ul class="list-disc list-inside space-y-1 text-zinc-400">
+          <li>Forbes Real-Time Billionaires via <code>komed3/rtb-api</code> (live, with cached fallback)</li>
+          <li>FX rates via <code>open.er-api.com</code></li>
+          <li>U.S. Federal Reserve SCF, BLS, U.S. Census, CBO, World Inequality Database</li>
+        </ul>
+      </div>
+
+      <div class="text-xs text-zinc-500 border-t border-zinc-800 pt-4">
+        Shortcuts: Space pause &middot; C currency &middot; M mode &middot; S sound &middot; P share &middot; R reset &middot; 1&ndash;5 speed &middot; ? this drawer &middot; Esc close
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== Snapshot Modal ===== -->
+  <div id="snapshot-backdrop" class="hidden fixed inset-0 z-40 bg-black/70"></div>
+  <div id="snapshot-modal" role="dialog" aria-label="Share snapshot" class="hidden fixed z-50 inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="pointer-events-auto w-full max-w-md rounded-2xl bg-zinc-950 border border-zinc-800 shadow-2xl p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-lg font-bold">Your session snapshot</h2>
+        <button id="btn-close-snapshot" class="p-1.5 rounded-lg hover:bg-zinc-900" aria-label="Close"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+      <div id="snapshot-preview-content" class="rounded-xl bg-black/50 border border-zinc-800 p-4"></div>
+      <button id="btn-copy-snapshot-text" class="w-full py-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-sm transition-colors">Copy Text Snapshot</button>
+    </div>
+  </div>
+
+  <!-- ===== Scripts (order matters) ===== -->
+  <script src="js/data.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/sync.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/race.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
